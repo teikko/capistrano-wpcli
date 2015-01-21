@@ -23,7 +23,7 @@ namespace :wpcli do
     task :pull do
       on roles(:web) do
         within release_path do
-          execute :wp, :db, :export, "- |", :gzip, ">", fetch(:wpcli_remote_db_file)
+          execute :wp, :db, :export, "--tables=$(wp db tables | tr '\n' ',')", "- |", :gzip, ">", fetch(:wpcli_remote_db_file)
           download! fetch(:wpcli_remote_db_file), fetch(:wpcli_local_db_file)
           execute :rm, fetch(:wpcli_remote_db_file)
         end
@@ -51,12 +51,12 @@ namespace :wpcli do
       unless roles(:dev).empty?
         on roles(:dev) do
           within fetch(:dev_path) do
-            execute :wp, :db, :export, "- |", :gzip, ">", fetch(:wpcli_local_db_file)
+            execute :wp, :db, :export, "--tables=$(wp db tables | tr '\n' ',')", "- |", :gzip, ">", fetch(:wpcli_local_db_file)
           end
         end
       else
         run_locally do
-          execute :wp, :db, :export, "- |", :gzip, ">", fetch(:wpcli_local_db_file)
+          execute :wp, :db, :export, "--tables=$(wp db tables | tr '\n' ',')", "- |", :gzip, ">", fetch(:wpcli_local_db_file)
         end
       end
       on roles(:web) do
